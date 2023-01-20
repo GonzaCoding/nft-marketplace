@@ -17,3 +17,9 @@ export const createDefaultState = () => ({
   contract: null,
   isLoading: true,
 });
+
+declare global {
+  interface Window {
+    ethereum: MetaMaskInpageProvider;
+  }
+}
