@@ -1,6 +1,7 @@
 import { FunctionComponent, createContext, useContext, useState } from "react";
+import { Web3State, createDefaultState } from './utils';
 
-const Web3Context = createContext<any>({});
+const Web3Context = createContext<Web3State>(createDefaultState());
 
 type Props = {
   children: React.ReactNode;
@@ -8,7 +9,7 @@ type Props = {
 
 const Web3Provider: FunctionComponent<Props> = ({ children }) => {
 
-  const [web3Api, setWeb3Api] = useState({test: "Hello provider"});
+  const [web3Api, setWeb3Api] = useState<Web3State>(createDefaultState());
 
   return (
     <Web3Context.Provider value={web3Api}>
