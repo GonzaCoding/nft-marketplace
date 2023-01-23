@@ -12,7 +12,7 @@ type AccountHookFactory = CryptoHookFactory<string, UseAccountResponse>;
 
 export type UseAccountHook = ReturnType<AccountHookFactory>;
 
-export const hookFactory: AccountHookFactory = ({provider, ethereum, isLoading}) => (params) => {
+export const hookFactory: AccountHookFactory = ({provider, ethereum, isLoading}) => () => {
   
   const swrResponse = useSWR(
     provider ? "web3/useAccount" : null,
