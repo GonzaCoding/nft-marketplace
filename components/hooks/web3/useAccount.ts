@@ -4,13 +4,15 @@ import { useEffect } from 'react';
 
 type UseAccountResponse = {
   connect: () => void;
+  isLoading: boolean;
+  isInstalled: boolean;
 } 
 
 type AccountHookFactory = CryptoHookFactory<string, UseAccountResponse>;
 
 export type UseAccountHook = ReturnType<AccountHookFactory>;
 
-export const hookFactory: AccountHookFactory = ({provider, ethereum}) => (params) => {
+export const hookFactory: AccountHookFactory = ({provider, ethereum, isLoading}) => (params) => {
   
   const swrResponse = useSWR(
     provider ? "web3/useAccount" : null,
@@ -41,8 +43,7 @@ export const hookFactory: AccountHookFactory = ({provider, ethereum}) => (params
     if (accounts.length === 0) {
       console.error("Please, connect to Web3 wallet.");
     } else if (accounts[0] !== swrResponse.data) {
-      alert("accounts has changed");
-      console.log(accounts[0]);
+      swrResponse.mutate(accounts[0]);
     }
   }
 
@@ -57,6 +58,8 @@ export const hookFactory: AccountHookFactory = ({provider, ethereum}) => (params
 
   return {
     ...swrResponse,
+    isLoading: isLoading || swrResponse.isValidating,
+    isInstalled: ethereum?.isMetaMask || false,
     connect
   };
 }
