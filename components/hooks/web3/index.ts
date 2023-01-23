@@ -8,3 +8,12 @@ export const useAccount = () => {
     account: swrResponse
   }
 }
+
+export const useNetwork = () => {
+  const hooks = useHooks();
+  const swrResponse = hooks.useNetwork();
+
+  return {
+    network: swrResponse,
+  }
+}
