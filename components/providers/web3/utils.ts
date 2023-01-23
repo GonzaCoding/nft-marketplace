@@ -1,28 +1,40 @@
 import { MetaMaskInpageProvider } from "@metamask/providers";
 import { Contract, providers, ethers } from "ethers";
-
-export type Web3Params = {
-  ethereum: MetaMaskInpageProvider | null;
-  provider: providers.Web3Provider | null;
-  contract: Contract | null;
-}
-
-export type Web3State = {
-  isLoading: boolean;
-} & Web3Params
-
-export const createDefaultState = () => ({
-  ethereum: null,
-  provider: null,
-  contract: null,
-  isLoading: true,
-});
+import { Web3Hooks, setupHooks } from '../../hooks/web3/setupHooks';
+import { Web3Dependencies } from "@_types/hooks";
 
 declare global {
   interface Window {
     ethereum: MetaMaskInpageProvider;
   }
 }
+
+type Nullable<T> = {
+  [P in keyof T]: T[P] | null;
+}
+
+export type Web3State = {
+  isLoading: boolean;
+  hooks: Web3Hooks;
+} & Nullable<Web3Dependencies>;
+
+export const createDefaultState = () => ({
+  ethereum: null,
+  provider: null,
+  contract: null,
+  isLoading: true,
+  hooks: setupHooks({} as any)
+});
+
+export const createWeb3State = ({
+  ethereum, provider, contract, isLoading
+}: Web3Dependencies & {isLoading: boolean}) => ({
+  ethereum,
+  provider,
+  contract,
+  isLoading,
+  hooks: setupHooks({ ethereum, provider, contract})
+});
 
 const NETWORK_ID = process.env.NEXT_PUBLIC_NETWORK_ID;
 
