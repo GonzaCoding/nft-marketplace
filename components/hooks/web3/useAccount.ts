@@ -16,4 +16,3 @@ export const hookFactory: AccountHookFactory = (deps) => (params) => {
   return swrResponse;
 }
 
-export const useAccount = hookFactory({ ethereum: undefined, provider: undefined, contract: undefined});
