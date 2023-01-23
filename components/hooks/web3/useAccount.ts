@@ -27,6 +27,7 @@ export const hookFactory: AccountHookFactory = ({provider, ethereum, isLoading})
       return account;
     }, {
       revalidateOnFocus: false,
+      shouldRetryOnError: false,
     }
   );
 
