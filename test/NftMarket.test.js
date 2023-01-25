@@ -5,6 +5,7 @@ const { ethers } = require("ethers");
 contract("NftMarket", accounts => {
   let _contract = null;
   let _nftPrice = ethers.utils.parseEther("0.3").toString();
+  let _listingPrice = ethers.utils.parseEther("0.025").toString();
 
   before(async () => {
     _contract = await NftMarket.deployed();
@@ -15,7 +16,8 @@ contract("NftMarket", accounts => {
 
     before(async () => {
       await _contract.mintToken(tokenURI, _nftPrice, {
-        from: accounts[0]
+        from: accounts[0],
+        value: _listingPrice,
       });
     });
     
@@ -50,6 +52,33 @@ contract("NftMarket", accounts => {
       assert.equal(nftItem.price, _nftPrice, "Token price is not correct");
       assert.equal(nftItem.creator, accounts[0], "Creator is not account[0");
       assert.equal(nftItem.isListed, true, "Token is not listed");
+    });
+
+  });
+
+  describe("Buy NFT", () => {
+    const tokenURI = "https://test.com";
+
+    before(async () => {
+      await _contract.buyNft(1, {
+        from: accounts[1],
+        value: _nftPrice,
+      });
+    });
+    
+    it("should unlist the item", async () => {
+      const listedItem = await _contract.getNftItem(1);
+      assert.equal(listedItem.isListed, false, "Item is still listed");
+    });
+
+    it("should decrese listed items count", async () => {
+      const listedItemsCount = await _contract.listedItemsCount();
+      assert.equal(listedItemsCount.toNumber(), 0, "Count has not been decremented");
+    });
+
+    it("should change the owner", async () => {
+      const currentOwner = await _contract.ownerOf(1);
+      assert.equal(currentOwner, accounts[1], "Owner has not changed");
     });
 
   });
