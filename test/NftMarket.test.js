@@ -111,5 +111,15 @@ contract("NftMarket", accounts => {
       assert.equal(allNfts[0].tokenId, 2, "Nft has a wrong id");
     });
 
+    it("account[0] should have 1 owned NFT", async () => {
+      const ownedNfts = await _contract.getOwnedNfts({ from: accounts[0] });
+      assert.equal(ownedNfts[0].tokenId, 2, "Nft has a wrong id");
+    });
+
+    it("account[1] should have 1 owned NFT", async () => {
+      const ownedNfts = await _contract.getOwnedNfts({ from: accounts[1] });
+      assert.equal(ownedNfts[0].tokenId, 1, "Nft has a wrong id");
+    });
+
   });
 });
