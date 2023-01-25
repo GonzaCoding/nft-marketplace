@@ -82,4 +82,29 @@ contract("NftMarket", accounts => {
     });
 
   });
+
+  describe("Token transfers", () => {
+    const tokenURI = "https://test-json-2.com";
+
+    before(async () => {
+      await _contract.mintToken(tokenURI, _nftPrice, {
+        from: accounts[0],
+        value: _listingPrice,
+      });
+    });
+    
+    it("should have 2 NFTs created", async () => {
+      const totalSupply = await _contract.totalSupply();
+      assert.equal(totalSupply.toNumber(), 2, "Total supply of token is not correct");
+    });
+
+    it("should be able to retrieve nft by index", async () => {
+      const nftId1 = await _contract.tokenByIndex(0);
+      const nftId2 = await _contract.tokenByIndex(1);
+      
+      assert.equal(nftId1.toNumber(), 1, "Nft id is wrong");
+      assert.equal(nftId2.toNumber(), 2, "Nft id is wrong");
+    });
+
+  });
 });
