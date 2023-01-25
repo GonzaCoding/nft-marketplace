@@ -57,8 +57,6 @@ contract("NftMarket", accounts => {
   });
 
   describe("Buy NFT", () => {
-    const tokenURI = "https://test.com";
-
     before(async () => {
       await _contract.buyNft(1, {
         from: accounts[1],
@@ -157,6 +155,26 @@ contract("NftMarket", accounts => {
       await _contract.burnToken(3, { from: accounts[2] });
       const ownedNfts = await _contract.getOwnedNfts({ from: accounts[2] });
       assert.equal(ownedNfts.length, 0, "Invalid length of tokens");
+    });
+  });
+
+  describe("List an NFT", () => {
+    before(async () => {
+      await _contract.placeNftOnSale(1, _nftPrice, {
+        from: accounts[1],
+        value: _listingPrice
+      });
+    });
+    
+    it("should have 3 listed items", async () => {
+      const allNftsOnSale = await _contract.getAllNftsOnSale();
+      assert.equal(allNftsOnSale.length, 3, "Invalid length of NFTs");
+    });
+
+    it("should set new listing Price", async () => {
+      await _contract.setListingPrice(_listingPrice, { from: accounts[0] });
+      const listingPrice = await _contract.listingPrice();
+      assert.equal(listingPrice.toString(), _listingPrice, "Invalid price");
     });
   });
 });
