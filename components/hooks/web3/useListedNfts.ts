@@ -1,3 +1,4 @@
+import { useCallback } from "react";
 import { CryptoHookFactory } from "@_types/hooks";
 import { Nft } from "@_types/nft";
 import useSWR from "swr";
@@ -37,9 +38,12 @@ export const hookFactory: ListedNftsHookFactory = ({contract}) => () => {
     }
   );
 
-  const buyNft = async (tokenId: number, value: number) => {
+  // workaround because it's undefined in first render
+  const _contract = contract;
+
+  const buyNft = useCallback(async (tokenId: number, value: number) => {
     try {
-      const result = await contract?.buyNft(tokenId, {
+      const result = await _contract!.buyNft(tokenId, {
         value: ethers.utils.parseEther(value.toString())
       });
 
@@ -48,7 +52,7 @@ export const hookFactory: ListedNftsHookFactory = ({contract}) => () => {
     } catch (error: any) {
       console.error(error.message)
     }
-  }
+  }, [_contract]);
 
   return {
     ...swrResponse,
