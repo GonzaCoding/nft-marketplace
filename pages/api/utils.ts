@@ -26,7 +26,7 @@ export function withSession(handler: any) {
 };
 
 export const addressCheckMiddleware = async (request: NextApiRequest & { session: Session }, response: NextApiResponse) => {
-  return new Promise((resolve, reject) => {
+  return new Promise(async (resolve, reject) => {
     const message = request.session.get("message-session");
     const provider = new ethers.providers.JsonRpcProvider("http://127.0.0.1:7545");
     const contract = new ethers.Contract(
@@ -34,6 +34,8 @@ export const addressCheckMiddleware = async (request: NextApiRequest & { session
       abi,
       provider,
     ) as unknown as NftMarketContract;
+
+    const name = await contract.name();
 
     if (message) {
       resolve("Correct Address");
