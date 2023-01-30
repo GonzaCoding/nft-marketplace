@@ -39,7 +39,10 @@ const Web3Provider: FunctionComponent<Props> = ({ children }) => {
         const signer = provider.getSigner();
         const signedContract = contract.connect(signer);
 
-        setGlobalListeners(window.ethereum);
+        // workaround for reload in brave navigator
+        setTimeout(() => {
+          setGlobalListeners(window.ethereum);
+        }, 500);
 
         setWeb3Api(createWeb3State({
           ethereum: window.ethereum,
