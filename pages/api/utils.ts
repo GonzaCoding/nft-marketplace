@@ -1,5 +1,8 @@
-import { withIronSession } from "next-iron-session";
+import { Session, withIronSession } from "next-iron-session";
 import contract from "../../public/contracts/NftMarket.json";
+import { NextApiRequest, NextApiResponse } from 'next';
+import { ethers } from "ethers";
+import { NftMarketContract } from "@_types/nftMarketContract";
 
 const NETWORKS = {
   "5777": "Ganache"
@@ -7,6 +10,7 @@ const NETWORKS = {
 
 type NETWORK = typeof NETWORKS;
 
+const abi = contract.abi;
 const targetNetwork = process.env.NEXT_PUBLIC_NETWORK_ID as keyof NETWORK;
 
 export const contractAddress = contract["networks"][targetNetwork]["address"];
@@ -19,4 +23,22 @@ export function withSession(handler: any) {
       secure: process.env.NODE_ENV === "production" ? true : false,
     }
   });
+};
+
+export const addressCheckMiddleware = async (request: NextApiRequest & { session: Session }, response: NextApiResponse) => {
+  return new Promise((resolve, reject) => {
+    const message = request.session.get("message-session");
+    const provider = new ethers.providers.JsonRpcProvider("http://127.0.0.1:7545");
+    const contract = new ethers.Contract(
+      contractAddress,
+      abi,
+      provider,
+    ) as unknown as NftMarketContract;
+
+    if (message) {
+      resolve("Correct Address");
+    } else {
+      reject("Wrong cookie or address");
+    }
+  })
 }
