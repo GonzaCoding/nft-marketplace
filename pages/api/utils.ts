@@ -1,4 +1,5 @@
 import { Session, withIronSession } from "next-iron-session";
+import * as util from "ethereumjs-util";
 import contract from "../../public/contracts/NftMarket.json";
 import { NextApiRequest, NextApiResponse } from 'next';
 import { ethers } from "ethers";
@@ -35,12 +36,17 @@ export const addressCheckMiddleware = async (request: NextApiRequest & { session
       provider,
     ) as unknown as NftMarketContract;
 
-    const name = await contract.name();
+    let nonce: string | Buffer = "\x19Ethereum Signed Message:\n" + JSON.stringify(message).length + JSON.stringify(message);
+    nonce = util.keccak(Buffer.from(nonce, "utf-8"));
+    const { v, r, s} = util.fromRpcSig(request.body.signature);
+    const publicKey = util.ecrecover(util.toBuffer(nonce), v, r, s);
+    const addressBuffer = util.pubToAddress(publicKey);
+    const address = util.bufferToHex(addressBuffer);
 
-    if (message) {
+    if (address === request.body.address) {
       resolve("Correct Address");
     } else {
-      reject("Wrong cookie or address");
+      reject("Wrong address");
     }
   })
 }

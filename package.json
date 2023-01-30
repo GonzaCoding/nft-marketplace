@@ -13,6 +13,7 @@
     "@openzeppelin/contracts": "^4.8.1",
     "@tailwindcss/forms": "^0.5.3",
     "axios": "^1.2.6",
+    "ethereumjs-util": "^7.1.5",
     "ethers": "^5.7.2",
     "next": "latest",
     "next-iron-session": "^4.2.0",
