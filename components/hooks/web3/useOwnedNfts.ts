@@ -4,7 +4,7 @@ import useSWR from "swr";
 import { ethers } from 'ethers';
 
 type UseOwnedNftsResponse = {
-  
+  listNft: (tokenId: number, newPrice: number) => Promise<void>;
 } 
 
 type OwnedNftsHookFactory = CryptoHookFactory<Nft[], UseOwnedNftsResponse>;
@@ -39,9 +39,27 @@ export const hookFactory: OwnedNftsHookFactory = ({contract}) => () => {
     }
   );
 
+  const listNft = async (tokenId: number, newPrice: number) => {
+    try {
+      const result = await contract?.placeNftOnSale(
+        tokenId,
+        ethers.utils.parseEther(newPrice.toString()),
+        {
+          value: ethers.utils.parseEther((0.025).toString())
+        }
+      );
+      
+      await result?.wait();
+      alert("Item has been listed!");
+    } catch (error: any) {
+      console.error(error.message)
+    }
+  }
+
   return {
     ...swrResponse,
     data: swrResponse.data || [],
+    listNft,
   };
 }
 
