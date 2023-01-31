@@ -15,6 +15,7 @@ const abi = contract.abi;
 const targetNetwork = process.env.NEXT_PUBLIC_NETWORK_ID as keyof NETWORK;
 
 export const contractAddress = contract["networks"][targetNetwork]["address"];
+export const pinataJwt = process.env.PINATA_JWT;
 
 export function withSession(handler: any) {
   return withIronSession(handler, {
