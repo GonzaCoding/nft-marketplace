@@ -5,7 +5,7 @@ import type { NextPage } from 'next';
 import { BaseLayout } from '@ui';
 import { Switch } from '@headlessui/react';
 import Link from 'next/link';
-import { NftMeta } from '@_types/nft';
+import { NftMeta, PinataResponse } from '@_types/nft';
 import axios from 'axios';
 import { useWeb3 } from '@providers/web3';
 
@@ -77,7 +77,7 @@ const NftCreate: NextPage = () => {
   }
 
   const handleImage = async (event: ChangeEvent<HTMLInputElement>) => {
-    if (!event.target.files) {
+    if (!event.target.files || event.target.files.length === 0) {
       console.error("Select a file");
       return;
     }
@@ -90,12 +90,21 @@ const NftCreate: NextPage = () => {
       
       const { signedData, account } = await getSignedData();
 
-      await axios.post("/api/verify", {
+      const response = await axios.post("/api/verify-image", {
         address: account,
         signature: signedData,
-        nft: nftMeta,
+        bytes,
+        contentType: file.type,
+        fileName: file.name.replace(/\.[^/.]+$/, "")
       });
+
+      const data = response.data as PinataResponse;
       
+      setNftMeta({
+        ...nftMeta,
+        image: `${process.env.NEXT_PUBLIC_PINATA_IMAGE_BASE_URL}/${data.IpfsHash}`
+      });
+
     } catch (error: any) {
       console.error(error.message);
     }
@@ -246,8 +255,8 @@ const NftCreate: NextPage = () => {
                     </p>
                   </div>
                   {/* Has Image? */}
-                  { false ?
-                    <img src="https://eincode.mypinata.cloud/ipfs/QmaQYCrX9Fg2kGijqapTYgpMXV7QPPzMwGrSRfV9TvTsfM/Creature_1.png" alt="" className="h-40" /> :
+                  { nftMeta.image ?
+                    <img src={nftMeta.image} alt="" className="h-40" /> :
                     <div>
                     <label className="block text-sm font-medium text-gray-700">Image</label>
                     <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md">
