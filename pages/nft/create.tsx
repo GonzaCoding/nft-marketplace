@@ -2,7 +2,7 @@
 
 import { ChangeEvent, useState } from 'react';
 import type { NextPage } from 'next';
-import { BaseLayout } from '@ui';
+import { BaseLayout, NotConnected } from '@ui';
 import { Switch } from '@headlessui/react';
 import Link from 'next/link';
 import axios from 'axios';
@@ -11,11 +11,13 @@ import { useWeb3 } from '@providers/web3';
 import { pinataImageBaseUrl } from 'pages/api/utils';
 import { NftMeta, PinataResponse } from '@_types/nft';
 import { toast } from 'react-toastify';
+import { useNetwork } from '@hooks/web3';
 
 const ALLOWED_FIELDS = ["name", "description", "image", "attributes"];
 
 const NftCreate: NextPage = () => {
   const { ethereum, contract } = useWeb3();
+  const { network } = useNetwork();
   const [nftURI, setNftURI] = useState("");
   const [hasURI, setHasURI] = useState(false);
   const [price, setPrice] = useState("");
@@ -168,6 +170,10 @@ const NftCreate: NextPage = () => {
     } catch (error: any) {
       console.error(error.message);
     }
+  }
+
+  if (!network.isConnectedToNetwork) {
+    return <NotConnected network={network} />;
   }
 
   return (

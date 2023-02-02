@@ -14,10 +14,11 @@ const NETWORKS: {[k: string]: string} = {
 const targetId = process.env.NEXT_PUBLIC_TARGET_CHAIN_ID as string;
 const targetNetwork = NETWORKS[targetId];
 
-type UseNetworkResponse = {
+export type UseNetworkResponse = {
   isLoading: boolean;
   isSupported: boolean;
   targetNetwork: string;
+  isConnectedToNetwork: boolean;
 } 
 
 type NetworkHookFactory = CryptoHookFactory<string, UseNetworkResponse>;
@@ -41,10 +42,13 @@ export const hookFactory: NetworkHookFactory = ({provider, isLoading}) => () => 
     }
   );
 
+  const isSupported = swrResponse.data === targetNetwork
+
   return {
     ...swrResponse,
     targetNetwork,
-    isSupported: swrResponse.data === targetNetwork,
+    isSupported,
+    isConnectedToNetwork: !isLoading && isSupported,
     isLoading: isLoading || swrResponse.isValidating,
   };
 }
