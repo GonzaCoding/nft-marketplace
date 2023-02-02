@@ -16,6 +16,7 @@ const targetNetwork = process.env.NEXT_PUBLIC_NETWORK_ID as keyof NETWORK;
 
 export const contractAddress = contract["networks"][targetNetwork]["address"];
 export const pinataJwt = process.env.PINATA_JWT;
+export const pinataImageBaseUrl = process.env.NEXT_PUBLIC_PINATA_IMAGE_BASE_URL;
 
 export function withSession(handler: any) {
   return withIronSession(handler, {
