@@ -3,6 +3,7 @@ import { CryptoHookFactory } from "@_types/hooks";
 import { Nft } from "@_types/nft";
 import useSWR from "swr";
 import { ethers } from 'ethers';
+import { toast } from "react-toastify";
 
 type UseOwnedNftsResponse = {
   listNft: (tokenId: number, newPrice: number) => Promise<void>;
@@ -53,8 +54,13 @@ export const hookFactory: OwnedNftsHookFactory = ({contract}) => () => {
         }
       );
       
-      await result?.wait();
-      alert("Item has been listed!");
+      await toast.promise(
+        result!.wait(), {
+          pending: "Processing transaction",
+          success: "Item has been listed",
+          error: "Processing error"
+        }
+      );
     } catch (error: any) {
       console.error(error.message)
     }

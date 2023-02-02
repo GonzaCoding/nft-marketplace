@@ -10,6 +10,7 @@ import { ethers } from 'ethers';
 import { useWeb3 } from '@providers/web3';
 import { pinataImageBaseUrl } from 'pages/api/utils';
 import { NftMeta, PinataResponse } from '@_types/nft';
+import { toast } from 'react-toastify';
 
 const ALLOWED_FIELDS = ["name", "description", "image", "attributes"];
 
@@ -70,11 +71,19 @@ const NftCreate: NextPage = () => {
       
       const { signedData, account } = await getSignedData();
 
-      const response = await axios.post("/api/verify", {
+      const promise = axios.post("/api/verify", {
         address: account,
         signature: signedData,
         nft: nftMeta,
       });
+
+      const response = await toast.promise(
+        promise, {
+          pending: "Uploading metadata",
+          success: "Metadata uploaded",
+          error: "Metadata upload error"
+        }
+      );
 
       const data = response.data as PinataResponse;
 
@@ -99,13 +108,21 @@ const NftCreate: NextPage = () => {
       
       const { signedData, account } = await getSignedData();
 
-      const response = await axios.post("/api/verify-image", {
+      const promise = axios.post("/api/verify-image", {
         address: account,
         signature: signedData,
         bytes,
         contentType: file.type,
         fileName: file.name.replace(/\.[^/.]+$/, "")
       });
+
+      const response = await toast.promise(
+        promise, {
+          pending: "Uploading image",
+          success: "Image uploaded",
+          error: "Image upload error"
+        }
+      );
 
       const data = response.data as PinataResponse;
       
@@ -140,9 +157,13 @@ const NftCreate: NextPage = () => {
         },
       );
 
-      await transaction?.wait();
-
-      alert("Nft was created");
+      await toast.promise(
+        transaction!.wait(), {
+          pending: "Creating token",
+          success: "Token created",
+          error: "Token creation error"
+        }
+      );
 
     } catch (error: any) {
       console.error(error.message);
