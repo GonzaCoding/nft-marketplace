@@ -26,6 +26,18 @@ const Profile: NextPage = () => {
     return () => setActiveNft(undefined);
   }, [nfts.data]);
 
+  const handleList = () => {
+    nfts.listNft(
+      activeNft!.tokenId,
+      activeNft!.price,
+    ).then(() => {
+      setActiveNft((prevNftState) => ({
+        ...prevNftState as Nft,
+        isListed: true,
+      }));
+    });    
+  }
+
   return (
     <BaseLayout>
       <div className="h-full flex">
@@ -139,12 +151,7 @@ const Profile: NextPage = () => {
                   </button>
                   <button
                     disabled={activeNft.isListed}
-                    onClick={() => {
-                      nfts.listNft(
-                        activeNft.tokenId,
-                        activeNft.price,
-                      )
-                    }}
+                    onClick={handleList}
                     type="button"
                     className="disabled:text-gray-400 disabled:cursor-not-allowed flex-1 ml-3 bg-white py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                   >
