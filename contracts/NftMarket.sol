@@ -148,6 +148,14 @@ contract NftMarket is ERC721URIStorage, Ownable {
     _listedItems.increment();
   }
 
+  function unlistNft(uint tokenId) public {
+    require(ERC721.ownerOf(tokenId) == msg.sender, "You are not owner of this nft");
+    require(_idToNftItem[tokenId].isListed == true, "Item is not on sale");
+    
+    _idToNftItem[tokenId].isListed = false;
+    _listedItems.decrement();
+  }
+
   function _createNftItem(uint tokenId, uint price) private {
     require(price > 0, "Price must be at least 1 wei");
     

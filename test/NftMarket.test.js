@@ -177,4 +177,17 @@ contract("NftMarket", accounts => {
       assert.equal(listingPrice.toString(), _listingPrice, "Invalid price");
     });
   });
+
+  describe("Un List an NFT", () => {
+    before(async () => {
+      await _contract.unlistNft(1, {
+        from: accounts[1],
+      });
+    });
+    
+    it("should have 2 listed items", async () => {
+      const allNftsOnSale = await _contract.getAllNftsOnSale();
+      assert.equal(allNftsOnSale.length, 2, "Invalid length of NFTs");
+    });
+  });
 });
