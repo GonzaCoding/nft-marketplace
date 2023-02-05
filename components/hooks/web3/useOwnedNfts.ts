@@ -67,10 +67,27 @@ export const hookFactory: OwnedNftsHookFactory = ({contract}) => () => {
     }
   }, [_contract]);
 
+  /*const unlistNft = useCallback(async (tokenId: number) => {
+    try {
+      const result = await _contract!.unlistNft(tokenId);
+      
+      await toast.promise(
+        result!.wait(), {
+          pending: "Processing transaction",
+          success: "Item has been unlisted",
+          error: "Processing error"
+        }
+      );
+    } catch (error: any) {
+      console.error(error.message)
+    }
+  }, [_contract]);*/
+
   return {
     ...swrResponse,
     data: swrResponse.data || [],
     listNft,
+    //unlistNft,
   };
 }
 
